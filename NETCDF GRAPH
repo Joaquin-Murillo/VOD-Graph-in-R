@@ -1,0 +1,39 @@
+library(ncdf4) # package for netcdf manipulation
+library(raster) # package for raster manipulation
+library(rgdal) # package for geospatial analysis
+library(ggplot2) # package for plotting
+
+nc_data <- nc_open('MTDCA_201704_201803_36km_V4.nc')
+
+print(nc_data)
+
+lon <- ncvar_get(nc_data, "lon")
+lat <- ncvar_get(nc_data, "lat", verbose = F)
+t <- ncvar_get(nc_data, "time")
+
+VOD.array <- ncvar_get(nc_data, "VOD") # store the data in a 3-dimensional array
+dim(VOD.array)
+
+fillvalue <- ncatt_get(nc_data, "VOD", "_FillValue")
+fillvalue
+
+nc_close(nc_data) 
+
+VOD.slice <- VOD.array[, , 365] 
+
+dim(VOD.slice)
+
+
+r_brick <- brick(VOD.array, xmn=min(lat), xmx=max(lat), ymn=min(lon), ymx=max(lon), crs=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs+ towgs84=0,0,0"))
+
+VOD_lon <- -147
+VOD_lat <- 64
+VOD_series <- extract(r_brick, SpatialPoints(cbind(VOD_lon,VOD_lat)), method='simple')
+
+VOD_df <- data.frame(year= seq(from=2017, to=2017, by=1), VOD=t(VOD_series))
+
+ggplot(data=VOD_df, aes(x=year, y=VOD, group=1)) +
+  geom_line() + # make this a line plot
+  ggtitle("VOD Data Over Several Months") +     # Set title
+  theme_bw() # use the black and white theme
+
