@@ -1,4 +1,4 @@
-# Website used for code below
+# Code used from the website listed below
 # https://rpubs.com/boyerag/297592
 
 library(ncdf4) # package for netcdf manipulation
