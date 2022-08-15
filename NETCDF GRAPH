@@ -1,3 +1,6 @@
+# Website used for code below
+# https://rpubs.com/boyerag/297592
+
 library(ncdf4) # package for netcdf manipulation
 library(raster) # package for raster manipulation
 library(rgdal) # package for geospatial analysis
